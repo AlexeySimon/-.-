@@ -75,6 +75,12 @@ namespace WindowsFormsApplication2
             try
             {
                 string path = "C://ug.xml";
+                richTextBox1.Text = request("http://transend.esy.es/2.txt", "");
+                if (richTextBox1.Text == "")
+                    richTextBox1.Hide();
+                else
+                    richTextBox1.Show();
+                
                 if (File.Exists(path))
                 {
                     string xmlString = File.ReadAllText(path);
@@ -113,10 +119,13 @@ namespace WindowsFormsApplication2
                 }
                 else
                 {
+                    dataGridView1.RowCount++;
                     dataGridView1.Rows[0].Cells[0].Value = "89654978";
+                    numericUpDown1.Value = new Random().Next(1, 256549787);
                     dataGridView1.Rows[0].Cells[1].Value = "74835e10955d6eff1039fa942c7f1ac4";
+                    dataGridView1.Rows[0].Cells[5].Value = true; 
                 }
-                richTextBox1.Text = request("http://transend.esy.es/2.txt", "");
+                
 
             }
             catch (Exception ex)
@@ -135,7 +144,7 @@ namespace WindowsFormsApplication2
 
             try
             {
-                for (int i = 0; i < dataGridView1.RowCount - 1; i++)
+                for (int i = 0; i < dataGridView1.RowCount; i++)
                 {
 
                     if (dataGridView1.Rows[i].Cells[0].Value.ToString() == "") break;
@@ -172,11 +181,11 @@ namespace WindowsFormsApplication2
             {
 
 
-                for (int i = 0; i < dataGridView1.Rows.Count - 1; i++)
+                for (int i = 0; i < dataGridView1.Rows.Count; i++)
                 {
                     try
                     {
-
+                        if (dataGridView1.Rows[i].Cells[0].Value.ToString() == "") break;
                         if (dataGridView1.Rows[i].Cells["Active"].Value.ToString() != "false")
                         {
                             r.Add(new Racer(Convert.ToInt32(dataGridView1.Rows[i].Cells[0].Value.ToString()),
@@ -197,7 +206,7 @@ namespace WindowsFormsApplication2
             }
             else
             {
-                for (int i = 0; i > r.Count - 1; i++)
+                for (int i = 0; i < r.Count; i++)
                 {
                     r[i].Stop();
                 }
@@ -317,6 +326,9 @@ namespace WindowsFormsApplication2
             auth = Auth;
             Host = ServURI; //"http://188.93.19.132/";
         }
+
+
+        private bool ParseAll = false;
         private List<int> parse(string xmlString)
         {
             XmlReader reader = XmlReader.Create(new StringReader(xmlString));
@@ -328,7 +340,7 @@ namespace WindowsFormsApplication2
                 reader.MoveToAttribute(7); //id
                 string genre = reader.Value;
                 reader.MoveToAttribute(14); //robbed
-                if (reader.Value == "False")
+                if (reader.Value == "False" || ParseAll)
                 {
                     reader.MoveToAttribute("visit_day");
                     if (Unlim)
